@@ -1,0 +1,128 @@
+[
+    {
+        "id": "d3d158bdd886cbbb",
+        "type": "tab",
+        "label": "Fluxo 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "c27a1e170aed1842",
+        "type": "inject",
+        "z": "d3d158bdd886cbbb",
+        "name": "Simular leitura RFID",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"tag\":\"EPC-123456\",\"zona\":\"Centro Cirúrgico\",\"hora\":\"2025-11-09 12:00\"}",
+        "payloadType": "json",
+        "x": 270,
+        "y": 180,
+        "wires": [
+            [
+                "9c9f1375b64a7e4b"
+            ]
+        ]
+    },
+    {
+        "id": "9c9f1375b64a7e4b",
+        "type": "function",
+        "z": "d3d158bdd886cbbb",
+        "name": "Acumular leituras",
+        "func": "let leituras = flow.get('leituras') || [];\nlet nova = msg.payload;\nleituras.unshift({\n    tag: nova.tag,\n    zona: nova.zona,\n    hora: nova.hora\n});\nif (leituras.length > 20) {\n    leituras = leituras.slice(0, 20);\n}\nflow.set('leituras', leituras);\nmsg.payload = leituras;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 180,
+        "wires": [
+            [
+                "1e2d2a730f45431b"
+            ]
+        ]
+    },
+    {
+        "id": "1e2d2a730f45431b",
+        "type": "ui_table",
+        "z": "d3d158bdd886cbbb",
+        "group": "g1",
+        "name": "Leituras RFID",
+        "order": 1,
+        "width": 12,
+        "height": 6,
+        "columns": [
+            {
+                "field": "tag",
+                "title": "Tag (EPC)",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "zona",
+                "title": "Zona",
+                "width": "",
+                "align": "center",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "hora",
+                "title": "Hora",
+                "width": "",
+                "align": "center",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            }
+        ],
+        "outputs": 0,
+        "cts": false,
+        "x": 740,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "g1",
+        "type": "ui_group",
+        "name": "📡 Leituras em Tempo Real",
+        "tab": "t1",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "t1",
+        "type": "ui_tab",
+        "name": "SimpleByte RFID – Controle Cirúrgico",
+        "icon": "fa-microchip",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "8371a36e5ffbd7d2",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-node-ui-table": "0.4.5",
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]
